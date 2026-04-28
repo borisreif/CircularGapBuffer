@@ -1,0 +1,79 @@
+# CircularGapBuffer
+
+A small mutable circular gap buffer implementation in modern JavaScript.
+
+## Features
+
+- Efficient insertion near the cursor
+- Cursor movement
+- Backspace and forward delete
+- Range deletion
+- Debug snapshot support
+- UTF-16 indexing model compatible with JavaScript strings and browser text offsets
+
+## Usage
+
+```js
+import CircularGapBuffer from "./CircularGapBuffer.js";
+
+const buffer = new CircularGapBuffer();
+
+buffer.insert("hello");
+buffer.moveCursor(2);
+buffer.insert("X");
+
+console.log(buffer.toString()); // "heXllo"
+console.log(buffer.cursor); // 3
+console.log(buffer.length); // 6
+
+buffer.insert("hello");
+buffer.moveCursor(2);
+
+const data = buffer.toSerializable();
+
+console.log(data);
+// {version: 1, text: "heXhellollo", cursor: 2}
+```
+
+## API
+
+### Core API
+
+- length
+- cursor
+- capacity
+- isEmpty
+- toString()
+- moveCursor(position)
+- insert(text)
+- backspace()
+- deleteForward()
+- deleteRange(start, end)
+- clear()
+- setText(text)
+- charAt(index)
+
+### Serialization
+
+- toSerializable()
+- fromText(text)
+- fromSerializable(data)
+
+### Debug API
+
+- debugSnapshot()
+- debugValidate()
+
+## Indexing model
+
+This class uses JavaScript string offsets, meaning indexes are measured in
+UTF-16 code units. This matches String.prototype.length,
+String.prototype.slice(), textarea.selectionStart, and
+textarea.selectionEnd.
+
+Grapheme-aware cursor movement should be implemented at a higher editor/model
+layer.
+
+## License
+
+MIT

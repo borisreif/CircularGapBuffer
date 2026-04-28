@@ -1,0 +1,17 @@
+{
+  "name": "gap-buffer",
+  "version": "0.1.0",
+  "description": "A small mutable gap buffer implementation in JavaScript.",
+  "type": "module",
+  "main": "CircularGapBuffer.js",
+  "exports": "./CircularGapBuffer.js",
+  "license": "MIT",
+  "author": "Boris A. Reif",
+  "scripts": {
+    "format": "prettier --write .",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.0"
+  }
+}
