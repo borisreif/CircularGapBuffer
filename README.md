@@ -8,6 +8,7 @@ A small mutable circular gap buffer implementation in modern JavaScript.
 - Cursor movement
 - Backspace and forward delete
 - Range deletion
+- Partial range reads with `slice(start, end)`
 - Debug snapshot support
 - UTF-16 indexing model compatible with JavaScript strings and browser text offsets
 
@@ -44,6 +45,7 @@ console.log(data);
 - capacity
 - isEmpty
 - toString()
+- slice(start, end)
 - moveCursor(position)
 - insert(text)
 - backspace()
