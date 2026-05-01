@@ -207,3 +207,68 @@ test("uses JavaScript UTF-16 string offsets", () => {
   assert.equal(buffer.length, "A😊B".length);
   assert.equal(buffer.length, 4);
 });
+
+test("slice returns a logical substring", () => {
+  const buffer = CircularGapBuffer.fromText("abcdefghijklmnopqrstuvwxyz");
+
+  assert.equal(buffer.slice(0, 5), "abcde");
+  assert.equal(buffer.slice(5, 10), "fghij");
+  assert.equal(buffer.slice(20), "uvwxyz");
+});
+
+test("slice supports negative indexes like String.prototype.slice", () => {
+  const buffer = CircularGapBuffer.fromText("abcdefghijklmnopqrstuvwxyz");
+
+  assert.equal(buffer.slice(-5), "vwxyz");
+  assert.equal(buffer.slice(0, -20), "abcdef");
+  assert.equal(buffer.slice(-10, -5), "qrstu");
+});
+
+test("slice works after cursor movement and insertion", () => {
+  const buffer = CircularGapBuffer.fromText("abcdef");
+  buffer.moveCursor(3);
+  buffer.insert("XXX");
+
+  assert.equal(buffer.toString(), "abcXXXdef");
+  assert.equal(buffer.slice(2, 7), "cXXXd");
+});
+
+test("toString equals slice over the full buffer", () => {
+  const buffer = CircularGapBuffer.fromText("hello world");
+  buffer.moveCursor(5);
+  buffer.insert(",");
+
+  assert.equal(buffer.toString(), buffer.slice(0, buffer.length));
+});
+
+test("slice rejects invalid indexes", () => {
+  const buffer = CircularGapBuffer.fromText("hello");
+
+  assert.throws(() => {
+    buffer.slice("0", 2);
+  }, TypeError);
+
+  assert.throws(() => {
+    buffer.slice(0, NaN);
+  }, TypeError);
+});
+
+test("slice matches String.prototype.slice after mixed edits", () => {
+  const buffer = CircularGapBuffer.fromText("abcdefghijklmnopqrstuvwxyz");
+
+  buffer.moveCursor(8);
+  buffer.insert("XXX");
+  buffer.deleteRange(2, 5);
+  buffer.moveCursor(buffer.length - 3);
+  buffer.insert("YYY");
+  buffer.backspace();
+  buffer.deleteForward();
+
+  const text = buffer.toString();
+
+  for (let start = -text.length - 2; start <= text.length + 2; start++) {
+    for (let end = -text.length - 2; end <= text.length + 2; end++) {
+      assert.equal(buffer.slice(start, end), text.slice(start, end));
+    }
+  }
+});
